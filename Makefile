@@ -4,7 +4,7 @@
 ######################################
 
 # Project Name (generate executable with this name)
-TARGET = mydraw.out
+TARGET = model.out
 
 # Project Paths
 PROJECT_ROOT:=.

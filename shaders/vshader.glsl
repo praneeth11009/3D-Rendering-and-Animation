@@ -1,12 +1,12 @@
-#version 330 core
+#version 130
 
-layout (location = 0) in vec2 i_pos;
-layout (location = 1) in vec2 i_tex_coords;
+in vec4 vPosition;
+in vec4 vColor;
+out vec4 color;
+uniform mat4 uModelViewMatrix;
 
-out vec2 tex_coords;
-
-void main()
+void main (void) 
 {
-    tex_coords = i_tex_coords;
-    gl_Position = vec4(i_pos.x, i_pos.y, 0.0, 1.0); 
-}  
+  gl_Position = uModelViewMatrix * vPosition;
+  color = vColor;
+}
