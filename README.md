@@ -38,7 +38,11 @@
   * Button `2` : select box lid
 
 * Key `M` : to start animation after noting Bezier points
-* Keys `X`, `Z`: to add key frames for animation
+* Keys `X`, `Z`: lights on / lights off
+* Key `V` to add a keyframe
+* Key `L` to load key frames
+* Left Click to add Bezier point
+* Right click to remove the Bezier point at the end
 
 * ## Room :
 	* Toggle Room : `R1`
