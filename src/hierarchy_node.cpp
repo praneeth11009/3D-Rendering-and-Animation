@@ -255,6 +255,14 @@ namespace csX75
 		update_matrices();
 	}
 
+	
+	glm::vec3 HNode::get_rot(){
+		return glm::vec3(rx,ry,rz);
+	}
+	glm::vec3 HNode::get_pos(){
+		return glm::vec3(tx,ty,tz);
+	}
+
 
 	glm::mat4* multiply_stack(std::vector<glm::mat4> matStack)
 	{

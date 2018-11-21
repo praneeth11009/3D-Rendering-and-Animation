@@ -1,6 +1,9 @@
 #include "gl_framework.hpp"
 #include "hierarchy_node.hpp"
 
+#include <fstream>
+#include <string.h>
+
 extern GLfloat c_xrot,c_yrot,c_zrot;
 extern GLfloat c_xpos,c_ypos,c_zpos;
 extern glm::vec4 c_lookAt, music_box_pos;
@@ -11,9 +14,17 @@ extern bool recordMode;
 extern bool start_camera;
 extern double timer;
 
+extern bool start_anim;
+extern double timer_anim;
+
+extern bool recordKey;
+extern uint frameSize;
+
 extern float obj_y;
 
 extern GLfloat l1,l2;
+
+extern std::vector< std::vector<GLfloat> > keyframes; 
 
 extern bool enable_perspective;
 
@@ -23,11 +34,14 @@ extern std::vector<glm::vec4> camera_positions;
 extern std::vector<glm::vec4> control_points;
 extern std::vector<csX75::HNode*> click_spheres;
 
-extern csX75::HNode* torso3, *torso2, *head, *neck, *right_ul, *left_ul, *right_ll, *left_ll,
+extern csX75::HNode* torso3, *torso2, *head, *neck, *right_ul, *left_ul, *right_ll, *left_ll,*platform,
     *right_ua, *left_ua, *right_la, *left_la,  *right_wr, *left_wr, *box_lid, *box_base, 
     *an_torso1, *an_neck, *an_head0, *an_left_fla, *an_right_fla, *an_left_fll, *an_right_fll, *an_tail, *curr_node,
     *room_door, *room, *room_window;
 int current = 1;
+std::ofstream ofs;
+std::ifstream ifs;
+
 namespace csX75
 {
   //! Initialize GL State
@@ -101,6 +115,71 @@ namespace csX75
     //!Close the window if the ESC key was pressed
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
       glfwSetWindowShouldClose(window, GL_TRUE);
+
+    else if (key == GLFW_KEY_V  && action == GLFW_PRESS){
+      ofs.open("keyframes.txt", std::ofstream::out | std::ofstream::app);
+      std::vector<GLfloat> v;
+      v.push_back(l1);
+      v.push_back(l2);
+
+      glm::vec3 pos, rot;
+
+      rot = box_lid->get_rot();
+      v.push_back(rot.x);
+      
+      pos = torso2->get_pos();
+      v.push_back(pos.x);
+      v.push_back(pos.y);
+      v.push_back(pos.z);
+
+      rot = torso2->get_rot();
+      v.push_back(rot.y);
+
+      rot = left_ua->get_rot();
+      v.push_back(rot.x);
+      v.push_back(rot.y);
+      v.push_back(rot.z);
+
+      rot = left_la->get_rot();
+      v.push_back(rot.x);
+
+      rot = right_ua->get_rot();
+      v.push_back(rot.x);
+      v.push_back(rot.y);
+      v.push_back(rot.z);
+
+      rot = right_la->get_rot();
+      v.push_back(rot.x);
+      
+      keyframes.push_back(v);
+
+      for(uint i=0;i<v.size();i++){
+        ofs << v[i] << " ";
+      }
+      ofs << "\n";
+      ofs.close();
+    }
+    else if(key == GLFW_KEY_C  && action == GLFW_PRESS){
+      if(keyframes.size() > 0){
+        start_anim = true;
+        timer_anim = glfwGetTime();
+        std::cout<<"start anim"<<std::endl;
+      }
+    }
+    else if(key == GLFW_KEY_L  && action == GLFW_PRESS){
+      keyframes.clear();
+      ifs.open("keyframes.txt", std::ifstream::in);
+      while(ifs.good()){
+        std::vector<GLfloat> v;
+        for(uint i=0;i<frameSize;i++){
+          GLfloat temp;
+          ifs >> temp;
+          v.push_back(temp);
+        }
+        keyframes.push_back(v);
+      }
+      ifs.close();
+    }
     else if (key == GLFW_KEY_B && action == GLFW_PRESS){
       current = 3;
       curr_node = box_base;
@@ -188,15 +267,19 @@ namespace csX75
       curr_node->inc_ry();
     else if (key == GLFW_KEY_UP && action == GLFW_PRESS){
       if(current == 3){
-        obj_y += 0.2;
-        torso2->change_parameters(-2.6,obj_y,0,0.0,0.0,0.0,0.06);
+       if(obj_y < 26.3){
+          obj_y += 0.2;
+          torso2->change_parameters(-2.6,obj_y,0,0.0,0.0,0.0,0.06);
+          platform->change_parameters(0,(obj_y-24),0,0.0,0.0,0.0,0.06);
+        }
       }
       curr_node->dec_rx();
     }
     else if (key == GLFW_KEY_DOWN && action == GLFW_PRESS){
       if(current == 3){
-        obj_y -= 0.2;
-        torso2->change_parameters(-2.6,obj_y,0,0.0,0.0,0.0,0.06);
+       obj_y -= 0.2;
+          torso2->change_parameters(-2.6,obj_y,0,0.0,0.0,0.0,0.06);
+          platform->change_parameters(0,(obj_y-24),0,0.0,0.0,0.0,0.06);
       }
       curr_node->inc_rx();
     }
@@ -274,5 +357,6 @@ namespace csX75
       else l2 = 1;
       //std::cout<<"Light 2 "<<l2<<std::endl;
     }
+    
   }
 };  

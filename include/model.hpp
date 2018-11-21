@@ -84,6 +84,7 @@ csX75::HNode* table_base;
 csX75::HNode* chair1_base;
 csX75::HNode* stool1_base;
 csX75::HNode* almarah_base;
+csX75::HNode* platform;
 
 //------- HUMAN ---------
 csX75::HNode* torso2;

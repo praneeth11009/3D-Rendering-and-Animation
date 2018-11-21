@@ -13,6 +13,7 @@ csX75::HNode* get_box(float,glm::vec4);
 
 extern csX75::HNode* box_lid;
 extern csX75::HNode* box_base;
+extern csX75::HNode* platform;
 
 extern glm::vec4 skincolor;
 extern glm::vec4 darkskincolor;

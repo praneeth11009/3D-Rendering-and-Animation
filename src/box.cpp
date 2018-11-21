@@ -9,6 +9,10 @@ csX75::HNode* get_box(float size,glm::vec4 offset)
     box_base->set_constraints(0,0,0,0,0,0);
     box_base->change_parameters(offset.x,offset.y,offset.z,0,0,0,size);
 
+    platform = hexagon(2.8, 0, glm::vec4(0,0,0,1),box_base,skincolor);
+    platform->set_constraints(1,0,1,0,1,0);
+    platform->change_parameters(0,0.1,0,0,0,0,size);
+
     //Interior hexagon of box
     csX75::HNode* inner_box = lid(2.8,1.9,glm::vec4(0,-0.95,0,1),box_base,browncolor2,skincolor);
     inner_box->set_constraints(1,0,1,0,1,0);

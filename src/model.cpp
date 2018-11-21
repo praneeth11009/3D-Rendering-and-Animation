@@ -22,6 +22,15 @@ glm::mat4 lookat_matrix;
 glm::mat4 model_matrix;
 glm::mat4 view_matrix;
 
+bool recordKey = false;
+
+std::vector< std::vector<GLfloat> > keyframes; 
+bool start_anim= false;
+double timer_anim;
+uint counter = 0;
+uint curr_frame = 0;
+double duration = 10.0;
+uint frameSize = 15;
 
 glm::mat4 modelview_matrix;
 glm::mat3 normal_matrix;
@@ -176,6 +185,8 @@ void initBuffersGL(void)
   size = 0.5;
   lamp = get_lamp(size,glm::vec4(-4,1.7,-2,1));
 
+  int aa = system("rm keyframes.txt");
+  aa = system("touch keyframes.txt");
 }
 
 void renderGL(void)
@@ -224,6 +235,7 @@ void renderGL(void)
         c_pos = current_pos;
         c_xpos = c_pos.x;c_ypos = c_pos.y;c_zpos = c_pos.z;
       }
+      timer = glfwGetTime();
     }
   }
 
@@ -247,6 +259,58 @@ void renderGL(void)
 
 
   matrixStack.push_back(view_matrix);
+
+  if(start_anim){
+    if(glfwGetTime() - timer_anim > 0.01){
+      timer_anim = glfwGetTime();
+      counter ++;
+      //std::cout<<counter<<std::endl;
+      if(counter > 30){
+        curr_frame ++;
+        counter = 0;
+      }
+      if(curr_frame >= keyframes.size()-1){
+        curr_frame = 0;
+        counter = 0;
+        start_anim = false;
+      }
+      else {
+        std::vector<GLfloat> frame1,frame2, cframe;
+        frame1 = keyframes[curr_frame];
+        frame2 = keyframes[curr_frame+1];
+
+        cframe.push_back(frame1[0]);
+        cframe.push_back(frame1[1]);
+        double t = counter*1.0/30;
+        for(uint i=2;i<frameSize;i++){
+          cframe.push_back(frame1[i]*(1-t) + frame2[i]*(t));
+        }
+        l1 = cframe[0]; l2 = cframe[1];
+        box_lid->rx = cframe[2];
+        box_lid->update_matrices();
+
+        torso2->tx = cframe[3];
+        torso2->ty = cframe[4];
+        torso2->tz = cframe[5];
+        torso2->ry = cframe[6];
+        torso2->update_matrices();
+
+        left_ua->rx = cframe[7];
+        left_ua->ry = cframe[8];
+        left_ua->rz = cframe[9];
+        left_la->rx = cframe[10];
+        left_la->update_matrices();
+        left_ua->update_matrices();
+
+        right_ua->rx = cframe[11];
+        right_ua->ry = cframe[12];
+        right_ua->rz = cframe[13];
+        right_la->rx = cframe[14];
+        right_la->update_matrices();
+        right_ua->update_matrices();
+      }
+    }
+  }
 
   glUseProgram(shaderProgram);
   glBindTexture(GL_TEXTURE_2D, tex_box);
