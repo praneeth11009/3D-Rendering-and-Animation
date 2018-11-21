@@ -36,7 +36,7 @@
 #include "room.hpp"
 #include "almarah.hpp"
 #include "bezier.hpp"
-#include <time.h>
+#include "lamp.hpp"
 
 /*
 // Translation Parameters
@@ -45,7 +45,7 @@ GLfloat xpos=0.0,ypos=0.0,zpos=0.0;
 GLfloat xrot=0.0,yrot=0.0,zrot=0.0;
 */
 // Camera position and rotation Parameters
-glm::vec4 start_posn = glm::vec4(0.0,2.0,8.0,1.0);
+glm::vec4 start_posn = glm::vec4(0.0,2.0,3.0,1.0);
 
 GLfloat c_xpos = start_posn.x, c_ypos = start_posn.y, c_zpos = start_posn.z;
 GLfloat c_up_x = 0.0, c_up_y = 1.0, c_up_z = 0.0;
@@ -57,7 +57,7 @@ bool recordMode = false; //set to true
 bool useTexture = false;
 
 bool start_camera = false;
-clock_t timer;
+double timer;
 
 float obj_y = 22;
 
@@ -69,7 +69,7 @@ bool solid=true;
 bool enable_perspective=true;
 //Shader program attribs
 GLuint vPosition,vColor,vNormal,texCoord;
-GLuint vPosition1,vColor1;
+GLuint vPosition1,vColor1,vNormal1;
 
 //global matrix stack for hierarchical modelling
 std::vector<glm::mat4> matrixStack;
@@ -77,7 +77,7 @@ std::vector<glm::mat4> matrixStack;
 //relative size of the character
 float size = 1;
 
-csX75::HNode* fox,*human,*box, *table, *chair1, *stool1, *almarah;
+csX75::HNode* fox,*human,*box, *table, *chair1, *stool1, *almarah, *lamp;
 csX75::HNode* curr_node;
 
 csX75::HNode* table_base;
@@ -131,6 +131,9 @@ csX75::HNode* room;
 
 csX75::HNode* room_door;
 csX75::HNode* room_window;
+
+//--------
+csX75::HNode* lamp_base;
 
 #endif
 

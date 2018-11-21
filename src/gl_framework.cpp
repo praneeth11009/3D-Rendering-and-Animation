@@ -9,15 +9,19 @@ extern glm::vec4 start_posn;
 
 extern bool recordMode;
 extern bool start_camera;
-extern clock_t timer;
+extern double timer;
 
 extern float obj_y;
+
+extern GLfloat l1,l2;
 
 extern bool enable_perspective;
 
 extern double width,height;
 extern glm::mat4 view_matrix;
 extern std::vector<glm::vec4> camera_positions;
+extern std::vector<glm::vec4> control_points;
+extern std::vector<csX75::HNode*> click_spheres;
 
 extern csX75::HNode* torso3, *torso2, *head, *neck, *right_ul, *left_ul, *right_ll, *left_ll,
     *right_ua, *left_ua, *right_la, *left_la,  *right_wr, *left_wr, *box_lid, *box_base, 
@@ -70,7 +74,8 @@ namespace csX75
 
             glm::vec4 orig_pos = pos*inv_view;
             orig_pos.z = c_zpos;
-            orig_pos.y = orig_pos.y + start_posn.y;
+            orig_pos.y = orig_pos.y + c_ypos;
+            orig_pos.x = orig_pos.x + c_xpos;
             camera_positions.push_back(orig_pos);
             //std::cout<<orig_pos.x<<" "<<orig_pos.y<<" "<<c_zpos<<" "<<orig_pos.a<<std::endl;
           }
@@ -78,7 +83,10 @@ namespace csX75
         case GLFW_MOUSE_BUTTON_RIGHT:
           if (action == GLFW_PRESS)
           {
-            camera_positions.pop_back();
+            if(control_points.size() > 0) {
+              control_points.pop_back();
+              click_spheres.pop_back();
+            }
           }
           break;
         default:
@@ -202,24 +210,28 @@ namespace csX75
 
     else if (key == GLFW_KEY_A  && action == GLFW_PRESS){
       if(!recordMode) c_yrot -= 10.0;
+      else c_xpos -= 0.2;
     }
     else if (key == GLFW_KEY_D  && action == GLFW_PRESS){
       if(!recordMode) c_yrot += 10.0;
+      else c_xpos += 0.2;
     }
     else if (key == GLFW_KEY_W  && action == GLFW_PRESS){
       if(recordMode) c_zpos -= 0.2;
-      else c_zrot -= 10.0;
+      else c_zpos -= 0.2;
       //std::cout<<c_xpos<<" "<<c_ypos<<" "<<c_zpos<<std::endl;
     }
     else if (key == GLFW_KEY_S  && action == GLFW_PRESS){
       if(recordMode) c_zpos += 0.2;
-      else c_zrot += 10.0;    
+      else c_zpos += 0.2;    
     }
     else if (key == GLFW_KEY_Q  && action == GLFW_PRESS){
       if(!recordMode) c_xrot += 10.0;
+      else c_ypos -= 0.2;
     }
     else if (key == GLFW_KEY_E  && action == GLFW_PRESS){
       if(!recordMode) c_xrot -= 10.0;
+      else c_ypos += 0.2;
     }
 
     else if (key == GLFW_KEY_O && action == GLFW_PRESS){
@@ -247,9 +259,20 @@ namespace csX75
         c_xrot = 0.0;
         c_yrot = 0.0;
         c_zrot = 0.0;
-        timer = clock();
+        timer = glfwGetTime();
         std::cout<<"Started timer"<<std::endl;
       }
+    }
+
+    else if (key == GLFW_KEY_Z  && action == GLFW_PRESS){
+      if(l1 == 1) l1 = 0;
+      else l1 = 1;
+      //std::cout<<"Light 1 "<<l1<<std::endl;
+    }
+    else if (key == GLFW_KEY_X  && action == GLFW_PRESS){
+      if(l2 == 1) l2 = 0;
+      else l2 = 1;
+      //std::cout<<"Light 2 "<<l2<<std::endl;
     }
   }
 };  

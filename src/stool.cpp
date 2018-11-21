@@ -9,11 +9,11 @@ csX75::HNode* get_stool1(float size,glm::vec4 offset)
 	float r3 = 0.15;
 	float h3 = 1.2;
 
-	stool1_base = cylinder(r1,r1,h1,glm::vec4(0,0,0,1),NULL,lightbluecolor,lightbluecolor);
+	stool1_base = cylinder(r1,r1,h1,glm::vec4(0,0,0,1),NULL,browncolor1,browncolor2);
 	stool1_base->set_constraints(0,0,0,0,0,0);
 	stool1_base->change_parameters(offset.x,offset.y,offset.z,0,0,0,size);
 
-	csX75::HNode* stool1_back = cylinder(r2,r2,h2,glm::vec4(0,0,0,1),stool1_base,darkerwhitecolor,darkerwhitecolor);
+	csX75::HNode* stool1_back = cylinder(r2,r2,h2,glm::vec4(0,0,0,1),stool1_base,browncolor1,browncolor1);
 	stool1_back->set_constraints(0,0,0,0,0,0);
 	stool1_back->change_parameters(0, -h2, 0, 0, 0, 0, size);
 

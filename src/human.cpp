@@ -85,7 +85,7 @@ csX75::HNode* get_human(float humansize,glm::vec4 offset)
     left_ll->change_parameters(0.0,-1.9,0,0.0,0.0,0.0,humansize); 
 
     //left lower leg
-    csX75::HNode* left_leg1 = ellipsoid(0.12,0.12,0.18,0.18,1.6,glm::vec4(0,-1.6,0,1),0,left_ll,whitecolor,darkwhitecolor);
+    csX75::HNode* left_leg1 = ellipsoid(0.12,0.12,0.18,0.18,1.6,glm::vec4(0,-1.6,0,1),0,left_ll,darkwhitecolor,darkwhitecolor);
     left_leg1->set_constraints(0,0,0,0,0,0);
     left_leg1->change_parameters(0,-0.35,0,0,0,0,humansize);
  
@@ -95,7 +95,7 @@ csX75::HNode* get_human(float humansize,glm::vec4 offset)
     right_ll->change_parameters(0.0,-1.9,0,0.0,0.0,0.0,humansize);
 
     //right lower leg
-    csX75::HNode* right_leg1 = ellipsoid(0.12,0.12,0.18,0.18,1.6,glm::vec4(0,-1.6,0,1),0,right_ll,whitecolor,darkwhitecolor);
+    csX75::HNode* right_leg1 = ellipsoid(0.12,0.12,0.18,0.18,1.6,glm::vec4(0,-1.6,0,1),0,right_ll,darkwhitecolor,darkwhitecolor);
     right_leg1->set_constraints(0,0,0,0,0,0);
     right_leg1->change_parameters(0,-0.35,0,0,0,0,humansize);
 
@@ -154,32 +154,32 @@ csX75::HNode* get_human(float humansize,glm::vec4 offset)
     right_ua->change_parameters(0.01,-0.01,0.0,0.0,0.0,90.0,humansize);
     
     //left lower arm
-    left_la = ellipsoid(0.1,0.06,0.16,0.16,1,glm::vec4(0,-1,0,1),0,left_ua,whitecolor,darkwhitecolor);
+    left_la = ellipsoid(0.1,0.06,0.16,0.16,1,glm::vec4(0,-1,0,1),0,left_ua,darkwhitecolor,darkwhitecolor);
     left_la->set_constraints(-150,0,0,0,0,0);
     left_la->change_parameters(0.0,-1,0.0,0.0,0.0,0.0,humansize);
     
     //right lower arm
-    right_la = ellipsoid(0.1,0.06,0.16,0.16,1,glm::vec4(0,-1,0,1),0,right_ua,whitecolor,darkwhitecolor);
+    right_la = ellipsoid(0.1,0.06,0.16,0.16,1,glm::vec4(0,-1,0,1),0,right_ua,darkwhitecolor,darkwhitecolor);
     right_la->set_constraints(-150,0,0,0,0,0);
     right_la->change_parameters(0.0,-1,0.0,0.0,0.0,0.0,humansize);
 
     //left palm
-    left_wr = ellipsoid(0.14,0.06,0.1,0.06,0.2,glm::vec4(0,-0.2,0,1),0,left_la,darkwhitecolor,whitecolor);
+    left_wr = ellipsoid(0.14,0.06,0.1,0.06,0.2,glm::vec4(0,-0.2,0,1),0,left_la,darkwhitecolor,darkwhitecolor);
     left_wr->set_constraints(-90,30,-180,0,0,0);
     left_wr->change_parameters(0.0,-1,0.02,0.0,0.0,0.0,humansize);
 
     //left lower palm (i.e., fingers part)
-    csX75:: HNode* left_wr2 = ellipsoid(0.06,0.04,0.14,0.06,0.3,glm::vec4(0,-0.3,0,1),0,left_wr,whitecolor,darkwhitecolor);
+    csX75:: HNode* left_wr2 = ellipsoid(0.06,0.04,0.14,0.06,0.3,glm::vec4(0,-0.3,0,1),0,left_wr,darkwhitecolor,darkwhitecolor);
     left_wr2->set_constraints(0,0,0,0,0,0);
     left_wr2->change_parameters(0,-0.2,0,0,0,0,humansize);
     
     //right palm
-    right_wr = ellipsoid(0.14,0.06,0.1,0.06,0.2,glm::vec4(0,-0.2,0,1),0,right_la,darkwhitecolor,whitecolor);
+    right_wr = ellipsoid(0.14,0.06,0.1,0.06,0.2,glm::vec4(0,-0.2,0,1),0,right_la,darkwhitecolor,darkwhitecolor);
     right_wr->set_constraints(-90,30,0,180,0,0);
     right_wr->change_parameters(0.0,-1,0.02,0.0,0.0,0.0,humansize);
 
     //right lower palm (i.e., fingers part)
-    csX75:: HNode* right_wr2 = ellipsoid(0.06,0.04,0.14,0.06,0.3,glm::vec4(0,-0.3,0,1),0,right_wr,whitecolor,darkwhitecolor);
+    csX75:: HNode* right_wr2 = ellipsoid(0.06,0.04,0.14,0.06,0.3,glm::vec4(0,-0.3,0,1),0,right_wr,darkwhitecolor,darkwhitecolor);
     right_wr2->set_constraints(0,0,0,0,0,0);
     right_wr2->change_parameters(0,-0.2,0,0,0,0,humansize);
 

@@ -24,18 +24,24 @@ glm::mat4 view_matrix;
 
 
 glm::mat4 modelview_matrix;
+glm::mat3 normal_matrix;
 
 GLuint uModelViewMatrix;
 GLuint uModelViewMatrix1;
 
-glm::mat3 normal_matrix;
-
 GLuint viewMatrix;
 GLuint normalMatrix;
+
+GLuint viewMatrix1;
+GLuint normalMatrix1;
+
+GLuint on1,on2,on11,on21;
+GLfloat l1 = 1,l2 = 1;
 
 GLuint tex_table,tex_box, tex_chair, tex_almarah, tex_room, tex_stool;
 
 double param = 0;
+double path_dist = -1;
 
 
 //colors
@@ -86,71 +92,89 @@ void initBuffersGL(void)
 
   // getting the attributes from the shader program
   vPosition = glGetAttribLocation( shaderProgram, "vPosition" );
-  vColor = glGetAttribLocation( shaderProgram, "vColor" ); 
-  uModelViewMatrix = glGetUniformLocation( shaderProgram, "uModelViewMatrix");
-
-
-  vNormal = glGetAttribLocation( shaderProgram, "vNormal" ); 
   texCoord = glGetAttribLocation( shaderProgram, "texCoord" );
+  vNormal = glGetAttribLocation( shaderProgram, "vNormal" ); 
+
+  uModelViewMatrix = glGetUniformLocation( shaderProgram, "uModelViewMatrix");
   normalMatrix =  glGetUniformLocation( shaderProgram, "normalMatrix");
   viewMatrix = glGetUniformLocation( shaderProgram, "viewMatrix");
 
+  /// Diff shader
+
   vPosition1 = glGetAttribLocation( shaderProgram1, "vPosition" );
   vColor1 = glGetAttribLocation( shaderProgram1, "vColor" ); 
-  uModelViewMatrix1 = glGetUniformLocation( shaderProgram1, "uModelViewMatrix");
+  vNormal1 = glGetAttribLocation( shaderProgram1, "vNormal" ); 
 
+  uModelViewMatrix1 = glGetUniformLocation( shaderProgram1, "uModelViewMatrix");
+  normalMatrix1 =  glGetUniformLocation( shaderProgram1, "normalMatrix");
+  viewMatrix1 = glGetUniformLocation( shaderProgram1, "viewMatrix");
+
+  on1 = glGetUniformLocation( shaderProgram, "on1");
+  on2 = glGetUniformLocation( shaderProgram, "on2");
+
+  on11 = glGetUniformLocation( shaderProgram1, "on1");
+  on21 = glGetUniformLocation( shaderProgram1, "on2");
 
   camera_positions.clear();
 
+
+  tex_box=LoadTexture("images/music.bmp",256,256);
+  tex_table=LoadTexture("images/dark-wood.bmp",256,256);
+  tex_chair=LoadTexture("images/music.bmp",256,256);
+  tex_almarah=LoadTexture("images/dark-wood.bmp",256,256);
+  tex_room=LoadTexture("images/light-wood.bmp",256,256);
+  tex_stool=LoadTexture("images/music.bmp",256,256);
 
   // Human 
   useTexture = false;
 
   size = 0.06; // set human size
   human = curr_node = get_human(size,glm::vec4(-2.6,obj_y,0,1));
+  // size = 0.06;
+  // human = curr_node = get_human(size,glm::vec4(0,0,0,1));
   
   // // Fox
   useTexture = false;
 
   size = 0.2; // set fox size
   fox = get_fox(size,glm::vec4(-1,2,0,1));
+  // size = 0.2;
+  // fox = get_fox(size,glm::vec4(0,0,0,1));
 
   // Hexagonal box  
-  useTexture = true;
-  tex_box=LoadTexture("images/music.bmp",256,256);
+  useTexture = true;  
 
   size = 0.16; //set box size
   box = get_box(size,glm::vec4(-1.8,7.4,0,1));  
 
   useTexture = true;
-  tex_table=LoadTexture("images/dark-wood.bmp",256,256);
-
+  
   size = 0.4;
   table = get_table(size, glm::vec4(-1,2.5,0,1));
 
   useTexture = true;
-  tex_chair=LoadTexture("images/music.bmp",256,256);
-
+  
   size = 0.4;
   chair1 = get_chair1(size, glm::vec4(-1,2,-3.5,1));
 
   useTexture = true;
-  tex_almarah=LoadTexture("images/dark-wood.bmp",256,256);
 
   size = 0.6;
-  almarah = get_almarah(size, glm::vec4(5,0.1,-2.5,1));
+  almarah = get_almarah(size, glm::vec4(5,0.2,-2.5,1));
 
   useTexture = true;
-  tex_room=LoadTexture("images/light-wood.bmp",256,256);
-
+  
   size = 3;
   room = get_room(size,glm::vec4(0,0,0,1));
 
-  useTexture = true;
-  tex_stool=LoadTexture("images/music.bmp",256,256);
-
+  useTexture = false;
+  
   size = 0.4;
   stool1 = get_stool1(size, glm::vec4(-5,1.8,-2.5,1)); 
+
+  useTexture = false;
+  size = 0.5;
+  lamp = get_lamp(size,glm::vec4(-4,1.7,-2,1));
 
 }
 
@@ -171,16 +195,29 @@ void renderGL(void)
   else c_pos = glm::vec4(c_xpos,c_ypos,c_zpos,1.0);
 
   if(recordMode) c_lookAt = glm::vec4(0,0,-1.0,1.0) + c_pos;
-  else c_lookAt = glm::vec4(0,0,0,1); 
+  else c_lookAt = glm::vec4(0,0,0,1);
+  //else c_lookAt = c_pos+ glm::vec4(0,0,-1,1)*c_rotation_matrix; 
+
+  if(start_camera && path_dist == -1){
+    path_dist = 0;
+    for(uint i=0;i<control_points.size()-1;i++){
+      glm::vec4 p1 = control_points[i];
+      glm::vec4 p2 = control_points[i+1];
+      double temp = sqrt((p1.x-p2.x)*(p1.x-p2.x)+(p1.y-p2.y)*(p1.y-p2.y)+(p1.z-p2.z)*(p1.z-p2.z));
+      path_dist += temp;
+    }
+    std::cout<<"path dist "<<path_dist<<std::endl;
+  }
 
   if(start_camera && control_points.size() > 0){
-    if(clock() - timer > 1000){
-      param += 0.0001;
+    if(glfwGetTime() - timer > 0.01){
+      param += 0.002/path_dist;
       if(param > 1) {
         start_camera = false;
         control_points.clear();
         click_spheres.clear();
         param = 0;
+        path_dist = -1;
       }
       else{
         glm::vec4 current_pos = getPosition(param,control_points);
@@ -205,13 +242,9 @@ void renderGL(void)
 
   view_matrix = projection_matrix*lookat_matrix;
 
-  
-
   glUniformMatrix4fv(viewMatrix, 1, GL_FALSE, glm::value_ptr(view_matrix));
-  modelview_matrix = view_matrix*model_matrix;
-  glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(modelview_matrix));
-  normal_matrix = glm::transpose (glm::inverse(glm::mat3(modelview_matrix)));
-  glUniformMatrix3fv(normalMatrix, 1, GL_FALSE, glm::value_ptr(normal_matrix));
+  glUniformMatrix4fv(viewMatrix1, 1, GL_FALSE, glm::value_ptr(view_matrix));
+
 
   matrixStack.push_back(view_matrix);
 
@@ -219,11 +252,12 @@ void renderGL(void)
   glBindTexture(GL_TEXTURE_2D, tex_box);
   box->render_tree();
 
-  // // glUseProgram( shaderProgram1);
-  // // fox->render_tree();
+  // glUseProgram( shaderProgram1);
+  // fox->render_tree();
 
   glUseProgram( shaderProgram1);
   human->render_tree();
+
 
   glUseProgram( shaderProgram);
   glBindTexture(GL_TEXTURE_2D, tex_table);
@@ -237,13 +271,17 @@ void renderGL(void)
   glBindTexture(GL_TEXTURE_2D, tex_almarah);
   almarah->render_tree();
   
-  glUseProgram( shaderProgram);
-  glBindTexture(GL_TEXTURE_2D, tex_stool);
-  stool1->render_tree();
   
   glUseProgram( shaderProgram);
   glBindTexture(GL_TEXTURE_2D, tex_room);
   room->render_tree();
+
+  glUseProgram( shaderProgram1);
+  stool1->render_tree();
+
+  glUseProgram( shaderProgram1);
+  lamp->render_tree();
+  
   
   if(recordMode){
     for(uint i=0;i<camera_positions.size();i++){
