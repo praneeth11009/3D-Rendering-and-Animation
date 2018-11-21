@@ -25,11 +25,15 @@ namespace csX75
 		GLfloat tx,ty,tz,rx,ry,rz;
 		GLfloat rx_min,ry_min,rz_min,rx_max,ry_max,rz_max;
 
+		bool texture_on;
+
 		std::size_t vertex_buffer_size;
 		std::size_t color_buffer_size;
+		std::size_t normal_buffer_size;
+		std::size_t texture_buffer_size;
 
 		GLuint num_vertices;
-		GLuint vao,vbo;
+		GLuint vao[2],vbo[2];
 
 		glm::mat4 rotation;
 		glm::mat4 translation;
@@ -41,6 +45,7 @@ namespace csX75
 
 	  public:
 		HNode (HNode*, GLuint, glm::vec4*,  glm::vec4*, std::size_t, std::size_t);
+		HNode (HNode*, GLuint, glm::vec4*,  glm::vec4*, glm::vec2*, std::size_t, std::size_t, std::size_t);
 
 		void add_child(HNode*);
 		void render();

@@ -2,28 +2,28 @@
 
 csX75::HNode* get_table(float size,glm::vec4 offset)
 {
-	float tl = 3;
+	float tl = 5;
 	float th = 0.2;
-	float tb = 3;
+	float tb = 5;
 	table_base = cuboid(tl,th,tb,th,tb,glm::vec4(0,0,0,1),0,NULL,browncolor1,browncolor1);
-	table_base->set_constraints(1,0,1,0,1,0);
+	table_base->set_constraints(0,0,0,0,0,0);
 	table_base->change_parameters(offset.x,offset.y,offset.z,0,0,0,size);
 
-	csX75::HNode* ftlegl = cuboid(1.25*th,tl,1.25*th,tl,1.25*th,glm::vec4(0,0,0,1),0,table_base,bluecolor,bluecolor);
+	csX75::HNode* ftlegl = cuboid(1.25*th,tl/2,1.25*th,tl/2,1.25*th,glm::vec4(0,0,0,1),0,table_base,bluecolor,bluecolor);
 	ftlegl->set_constraints(0,0,0,0,0,0);
-	ftlegl->change_parameters(-3*tl/8, -tl/2, 3*tl/8, 0, 0, 0, size);
+	ftlegl->change_parameters(-3*tl/8, -tl/4, 3*tl/8, 0, 0, 0, size);
 
-	csX75::HNode* ftlegr = cuboid(1.25*th,tl,1.25*th,tl,1.25*th,glm::vec4(0,0,0,1),0,table_base,skincolor,skincolor);
+	csX75::HNode* ftlegr = cuboid(1.25*th,tl/2,1.25*th,tl/2,1.25*th,glm::vec4(0,0,0,1),0,table_base,skincolor,skincolor);
 	ftlegr->set_constraints(0,0,0,0,0,0);
-	ftlegr->change_parameters(3*tl/8, -tl/2, 3*tl/8, 0, 0, 0, size);
+	ftlegr->change_parameters(3*tl/8, -tl/4, 3*tl/8, 0, 0, 0, size);
 
-	csX75::HNode* bklegl = cuboid(1.25*th,tl,1.25*th,tl,1.25*th,glm::vec4(0,0,0,1),0,table_base,whitecolor,whitecolor);
+	csX75::HNode* bklegl = cuboid(1.25*th,tl/2,1.25*th,tl/2,1.25*th,glm::vec4(0,0,0,1),0,table_base,whitecolor,whitecolor);
 	bklegl->set_constraints(0,0,0,0,0,0);
-	bklegl->change_parameters(-3*tl/8, -tl/2, -3*tl/8, 0, 0, 0, size);
+	bklegl->change_parameters(-3*tl/8, -tl/4, -3*tl/8, 0, 0, 0, size);
 
-	csX75::HNode* bklegr = cuboid(1.25*th,tl,1.25*th,tl,1.25*th,glm::vec4(0,0,0,1),0,table_base,redcolor,redcolor);
+	csX75::HNode* bklegr = cuboid(1.25*th,tl/2,1.25*th,tl/2,1.25*th,glm::vec4(0,0,0,1),0,table_base,redcolor,redcolor);
 	bklegr->set_constraints(0,0,0,0,0,0);
-	bklegr->change_parameters(3*tl/8, -tl/2, -3*tl/8, 0, 0, 0, size);
+	bklegr->change_parameters(3*tl/8, -tl/4, -3*tl/8, 0, 0, 0, size);
 
 	return table_base;
 }

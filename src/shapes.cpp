@@ -18,6 +18,13 @@ glm::vec4 colors1[12] = {
     glm::vec4(0.0, 1.0, 1.0, 1.0)
 };
 
+glm::vec4 normals[12];
+
+glm::vec2 t_coords[4];
+
+
+extern bool useTexture;
+
 //! for quadrilateral using 2 triangles
 void quad(glm::vec4* v_positions,glm::vec4* v_colors,glm::vec4* positions,int* tri_idx,int a, int b, int c, int d)
 {
@@ -29,12 +36,39 @@ void quad(glm::vec4* v_positions,glm::vec4* v_colors,glm::vec4* positions,int* t
     v_colors[*tri_idx] = colors1[d]; v_positions[*tri_idx] = positions[d]; *tri_idx = *tri_idx + 1;
 }
 
+void quad2(glm::vec4* v_positions,glm::vec4* v_colors,glm::vec4* v_normals,glm::vec2* tex_coords,glm::vec4* positions,int* tri_idx,int a, int b, int c, int d)
+{
+v_normals[*tri_idx] = normals[a]; tex_coords[*tri_idx] = t_coords[1];
+    v_colors[*tri_idx] = colors1[a]; v_positions[*tri_idx] = positions[a]; *tri_idx = *tri_idx + 1;
+
+v_normals[*tri_idx] = normals[b]; tex_coords[*tri_idx] = t_coords[0];
+    v_colors[*tri_idx] = colors1[b]; v_positions[*tri_idx] = positions[b]; *tri_idx = *tri_idx + 1;
+
+v_normals[*tri_idx] = normals[c]; tex_coords[*tri_idx] = t_coords[2];
+    v_colors[*tri_idx] = colors1[c]; v_positions[*tri_idx] = positions[c]; *tri_idx = *tri_idx + 1;
+
+v_normals[*tri_idx] = normals[a]; tex_coords[*tri_idx] = t_coords[1];
+    v_colors[*tri_idx] = colors1[a]; v_positions[*tri_idx] = positions[a]; *tri_idx = *tri_idx + 1;
+
+v_normals[*tri_idx] = normals[c]; tex_coords[*tri_idx] = t_coords[2];
+    v_colors[*tri_idx] = colors1[c]; v_positions[*tri_idx] = positions[c]; *tri_idx = *tri_idx + 1;
+
+v_normals[*tri_idx] = normals[d]; tex_coords[*tri_idx] = t_coords[3];
+    v_colors[*tri_idx] = colors1[d]; v_positions[*tri_idx] = positions[d]; *tri_idx = *tri_idx + 1;
+}
+
 //! quadrilateral frustum with shear option in height direction
 csX75::HNode* cuboid(float lx0,float hy0,float bz0,float hy10,float bz10,glm::vec4 offset,float shear0,csX75::HNode* parent,glm::vec4 color1,glm::vec4 color2)
 {
 	const int num_vertices = 36;
 	glm::vec4 v_positions[num_vertices];
 	glm::vec4 v_colors[num_vertices];
+
+    glm::vec4 v_normals[num_vertices];
+    glm::vec2 tex_coords[num_vertices];
+
+    t_coords[0] = glm::vec2(0.0,0.0);t_coords[1] = glm::vec2(0.0,1.0);
+    t_coords[3] = glm::vec2(1.0,1.0);t_coords[2] = glm::vec2(1.0,0.0);
 
 	int tri_idx=0;
     float lx = lx0*size;
@@ -52,19 +86,35 @@ csX75::HNode* cuboid(float lx0,float hy0,float bz0,float hy10,float bz10,glm::ve
     positions[6] = glm::vec4(lx/2,(hy1/2)+shear,-bz1/2,1.0);  colors1[6] = color2;
     positions[7] = glm::vec4(lx/2,(-hy1/2)+shear,-bz1/2,1.0); colors1[7] = color2;
 
+    normals[0] = positions[0];
+    normals[1] = positions[1];
+    normals[2] = positions[2];
+    normals[3] = positions[3];
+    normals[4] = positions[4];
+    normals[5] = positions[5];
+    normals[6] = positions[6];
+    normals[7] = positions[7];
+
     for(int i=0;i<8;i++)
     {
     	positions[i].x = positions[i].x + size*offset.x;
     	positions[i].y = positions[i].y + size*offset.y;
     	positions[i].z = positions[i].z + size*offset.z;
     }
-    quad(v_positions,v_colors,positions,&tri_idx, 1, 0, 3, 2 );
-    quad(v_positions,v_colors,positions,&tri_idx, 2, 3, 7, 6 );
-    quad(v_positions,v_colors,positions,&tri_idx, 3, 0, 4, 7 );
-    quad(v_positions,v_colors,positions,&tri_idx, 6, 5, 1, 2 );
-    quad(v_positions,v_colors,positions,&tri_idx, 4, 5, 6, 7 );
-    quad(v_positions,v_colors,positions,&tri_idx, 5, 4, 0, 1 );
-    csX75::HNode* node = new csX75::HNode(parent,num_vertices,v_positions,v_colors,sizeof(v_positions),sizeof(v_colors));
+    quad2(v_positions,v_colors,v_normals,tex_coords,positions,&tri_idx, 1, 0, 3, 2 );
+    quad2(v_positions,v_colors,v_normals,tex_coords,positions,&tri_idx, 2, 3, 7, 6 );
+    quad2(v_positions,v_colors,v_normals,tex_coords,positions,&tri_idx, 3, 0, 4, 7 );
+    quad2(v_positions,v_colors,v_normals,tex_coords,positions,&tri_idx, 6, 5, 1, 2 );
+    quad2(v_positions,v_colors,v_normals,tex_coords,positions,&tri_idx, 4, 5, 6, 7 );
+    quad2(v_positions,v_colors,v_normals,tex_coords,positions,&tri_idx, 5, 4, 0, 1 );
+
+    csX75::HNode* node;
+    if(useTexture) {
+        node = new csX75::HNode(parent,num_vertices,v_positions,v_normals,tex_coords,sizeof(v_positions),sizeof(v_normals),sizeof(tex_coords));
+    }
+    else {
+        node = new csX75::HNode(parent,num_vertices,v_positions,v_colors,sizeof(v_positions),sizeof(v_colors));
+    }
     return node;
 }
 
@@ -125,6 +175,11 @@ csX75::HNode* lid(float r0,float h0,glm::vec4 offset,csX75::HNode* parent,glm::v
     const int num_vertices = 48;
     glm::vec4 v_positions[num_vertices];
     glm::vec4 v_colors[num_vertices];
+
+    glm::vec4 v_normals[num_vertices];
+    glm::vec2 tex_coords[num_vertices];
+
+
     glm::vec4 positions[8];
     int tri_idx = 0;
     float r = r0*size, h = h0*size;
@@ -136,6 +191,13 @@ csX75::HNode* lid(float r0,float h0,glm::vec4 offset,csX75::HNode* parent,glm::v
     positions[4] = glm::vec4(r/2,0,sqrt(3)*r/2,1.0);
     positions[5] = glm::vec4(-r/2,0,sqrt(3)*r/2,1.0);
 
+    normals[0] = positions[0];
+    normals[1] = positions[1];
+    normals[2] = positions[2];
+    normals[3] = positions[3];
+    normals[4] = positions[4];
+    normals[5] = positions[5];
+
     for(int i=0;i<6;i++)
     {
         positions[i].x = positions[i].x + size*offset.x;
@@ -144,8 +206,18 @@ csX75::HNode* lid(float r0,float h0,glm::vec4 offset,csX75::HNode* parent,glm::v
         colors1[i] = color1;
     }
 
-    quad(v_positions,v_colors,positions,&tri_idx, 0,1,2,3);
-    quad(v_positions,v_colors,positions,&tri_idx, 0,3,4,5);
+    t_coords[1] = glm::vec2(0.0,0.5);t_coords[0] = glm::vec2(0.5/sqrt(3),0);
+    t_coords[2] = glm::vec2(1-0.5/sqrt(3),0);t_coords[3] = glm::vec2(1.0,0.5);
+    quad2(v_positions,v_colors,v_normals,tex_coords,positions,&tri_idx, 0,1,2,3);
+    //quad(v_positions,v_colors,positions,&tri_idx, 0,1,2,3);
+
+    t_coords[1] = glm::vec2(0.0,0.5);t_coords[0] = glm::vec2(1.0,0.5);
+    t_coords[2] = glm::vec2(1-0.5/sqrt(3),1);t_coords[3] = glm::vec2(0.5/sqrt(3),1);
+    quad2(v_positions,v_colors,v_normals,tex_coords,positions,&tri_idx, 0,3,4,5);
+    //quad(v_positions,v_colors,positions,&tri_idx, 0,3,4,5);
+
+    t_coords[0] = glm::vec2(0.0,0.0);t_coords[1] = glm::vec2(1.0/sqrt(3),0.0);
+    t_coords[3] = glm::vec2(1.0/sqrt(3),h/(sqrt(3)*r) );t_coords[2] = glm::vec2(0.0,h/(sqrt(3)*r));
 
     for(int i=0;i<6;i++)
     {    
@@ -157,10 +229,22 @@ csX75::HNode* lid(float r0,float h0,glm::vec4 offset,csX75::HNode* parent,glm::v
         colors1[(i+1)%6] = color2;
         colors1[6] = color2;
         colors1[7] = color2;
-        
-        quad(v_positions,v_colors,positions,&tri_idx,i,(i+1)%6,7,6);
+
+        normals[6] = positions[6];
+        normals[7] = positions[7];
+
+        quad2(v_positions,v_colors,v_normals,tex_coords,positions,&tri_idx,i,(i+1)%6,7,6);
+        //quad(v_positions,v_colors,positions,&tri_idx,i,(i+1)%6,7,6);
+
+        glm::vec2 temp = t_coords[0];
+        t_coords[0] = t_coords[1];
+        t_coords[1] = temp;
+        temp = t_coords[2];
+        t_coords[2] = t_coords[3];
+        t_coords[3] = temp;
+
     }
-    csX75::HNode* node = new csX75::HNode(parent,num_vertices,v_positions,v_colors,sizeof(v_positions),sizeof(v_colors));
+    csX75::HNode* node = new csX75::HNode(parent,num_vertices,v_positions,v_normals,tex_coords,sizeof(v_positions),sizeof(v_normals),sizeof(tex_coords));
     return node;
 }
 
@@ -170,6 +254,10 @@ csX75::HNode* hexagon(float r10,float r20,glm::vec4 offset, csX75::HNode* parent
     const int num_vertices = 36;
     glm::vec4 v_positions[num_vertices];
     glm::vec4 v_colors[num_vertices];
+
+    glm::vec4 v_normals[num_vertices];
+    glm::vec2 tex_coords[num_vertices];
+
     glm::vec4 positions[12];
     int tri_idx = 0;
     float r1 = r10*size, r2 = r20*size;
@@ -188,15 +276,40 @@ csX75::HNode* hexagon(float r10,float r20,glm::vec4 offset, csX75::HNode* parent
     positions[10] = glm::vec4(r2/2,0,sqrt(3)*r2/2,1.0);
     positions[11] = glm::vec4(-r2/2,0,sqrt(3)*r2/2,1.0);
 
+    normals[0] = positions[0];
+    normals[1] = positions[1];
+    normals[2] = positions[2];
+    normals[3] = positions[3];
+    normals[4] = positions[4];
+    normals[5] = positions[5];
+
+    normals[6] = positions[6];
+    normals[7] = positions[7];
+    normals[8] = positions[8];
+    normals[9] = positions[9];
+    normals[10] = positions[10];
+    normals[11] = positions[11];
+
     for(int i=0;i<12;i++)
         colors1[i] = color;
 
+    t_coords[0] = glm::vec2(0.0,0.0);t_coords[1] = glm::vec2(1.0,0.0);
+    t_coords[3] = glm::vec2(1.0,abs(r1-r2)/r1 );t_coords[2] = glm::vec2(0.0,abs(r1-r2)/r1);
+
     for(int i=0;i<6;i++)
-    {
-        quad(v_positions,v_colors,positions,&tri_idx, i,(i+1)%6,(i+1)%6+6,i+6);
+    {   
+        quad2(v_positions,v_colors,v_normals,tex_coords,positions,&tri_idx, i,(i+1)%6,(i+1)%6+6,i+6);
+        //quad(v_positions,v_colors,positions,&tri_idx, i,(i+1)%6,(i+1)%6+6,i+6);
+
+        glm::vec2 temp = t_coords[0];
+        t_coords[0] = t_coords[1];
+        t_coords[1] = temp;
+        temp = t_coords[2];
+        t_coords[2] = t_coords[3];
+        t_coords[3] = temp;
     }
 
-    csX75::HNode* node = new csX75::HNode(parent,num_vertices,v_positions,v_colors,sizeof(v_positions),sizeof(v_colors));
+    csX75::HNode* node = new csX75::HNode(parent,num_vertices,v_positions,v_normals,tex_coords,sizeof(v_positions),sizeof(v_normals),sizeof(tex_coords));
     return node;
 }
 

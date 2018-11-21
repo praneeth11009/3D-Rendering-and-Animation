@@ -6,7 +6,7 @@ csX75::HNode* get_chair1(float size,glm::vec4 offset)
 	float th = 0.2;
 	float tb = 2;
 	chair1_base = cuboid(tl,th,tb,th,tb,glm::vec4(0,0,0,1),0,NULL,browncolor1,browncolor1);
-	chair1_base->set_constraints(1,0,1,0,1,0);
+	chair1_base->set_constraints(0,0,0,0,0,0);
 	chair1_base->change_parameters(offset.x,offset.y,offset.z,0,0,0,size);
 
 	csX75::HNode* chair1_back = cuboid(tl,1.5*tb,th,1.5*tb,th,glm::vec4(0,0,0,1),0,chair1_base,bluecolor,bluecolor);

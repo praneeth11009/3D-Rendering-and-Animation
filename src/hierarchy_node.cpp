@@ -1,9 +1,12 @@
 #include "hierarchy_node.hpp"
+#include "texture.hpp"
 
 #include <iostream>
 
-extern GLuint vPosition,vColor,uModelViewMatrix;
+extern GLuint vPosition,vColor,uModelViewMatrix, vNormal, texCoord;
+extern GLuint vPosition1,vColor1,uModelViewMatrix1;
 extern std::vector<glm::mat4> matrixStack;
+
 
 namespace csX75
 {
@@ -17,13 +20,13 @@ namespace csX75
 		// initialize vao and vbo of the object;
 
 		//Ask GL for a Vertex Attribute Objects (vao)
-		glGenVertexArrays (1, &vao);
+		glGenVertexArrays (1, vao);
 		//Ask GL for aVertex Buffer Object (vbo)
-		glGenBuffers (1, &vbo);
+		glGenBuffers (1, vbo);
 
 		//bind them
-		glBindVertexArray (vao);
-		glBindBuffer (GL_ARRAY_BUFFER, vbo);
+		glBindVertexArray (vao[0]);
+		glBindBuffer (GL_ARRAY_BUFFER, vbo[0]);
 
 		
 		glBufferData (GL_ARRAY_BUFFER, vertex_buffer_size + color_buffer_size, NULL, GL_STATIC_DRAW);
@@ -31,11 +34,64 @@ namespace csX75
 		glBufferSubData( GL_ARRAY_BUFFER, vertex_buffer_size, color_buffer_size, a_colours );
 
 		//setup the vertex array as per the shader
+		glEnableVertexAttribArray( vPosition1 );
+		glVertexAttribPointer( vPosition1, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0) );
+
+		glEnableVertexAttribArray( vColor1 );
+		glVertexAttribPointer( vColor1, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vertex_buffer_size));
+
+		// set parent
+
+		if(a_parent == NULL)
+		{
+			parent = NULL;
+		}
+		else
+		{
+			parent = a_parent;
+			parent->add_child(this);
+		}
+
+		//initial parameters are set to 0;
+
+		tx=ty=tz=rx=ry=rz=0;
+		texture_on = false;
+
+		update_matrices();
+	}
+	HNode::HNode(HNode* a_parent, GLuint num_v, glm::vec4* a_vertices, glm::vec4* a_normals, glm::vec2* a_tex_coords, std::size_t v_size, std::size_t n_size, std::size_t t_size)
+	{
+
+		num_vertices = num_v;
+		vertex_buffer_size = v_size;
+		normal_buffer_size = n_size;
+		texture_buffer_size = t_size;
+		// initialize vao and vbo of the object;
+
+		//Ask GL for a Vertex Attribute Objects (vao)
+		glGenVertexArrays (2, vao);
+		//Ask GL for aVertex Buffer Object (vbo)
+		glGenBuffers (2, vbo);
+
+		//bind them
+		glBindVertexArray (vao[0]);
+		glBindBuffer (GL_ARRAY_BUFFER, vbo[0]);
+
+		glBufferData (GL_ARRAY_BUFFER, vertex_buffer_size + normal_buffer_size + texture_buffer_size, NULL, GL_STATIC_DRAW);
+		glBufferSubData( GL_ARRAY_BUFFER, 0, vertex_buffer_size, a_vertices );
+	  	glBufferSubData( GL_ARRAY_BUFFER, vertex_buffer_size, texture_buffer_size, a_tex_coords);
+	  	glBufferSubData( GL_ARRAY_BUFFER, texture_buffer_size+vertex_buffer_size, normal_buffer_size, a_normals );
+
+		//setup the vertex array as per the shader
 		glEnableVertexAttribArray( vPosition );
 		glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0) );
 
-		glEnableVertexAttribArray( vColor );
-		glVertexAttribPointer( vColor, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vertex_buffer_size));
+		glEnableVertexAttribArray( texCoord );
+	  	glVertexAttribPointer( texCoord, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vertex_buffer_size) );
+
+ 		//Normal
+	  	glEnableVertexAttribArray( vNormal );
+	  	glVertexAttribPointer( vNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vertex_buffer_size+texture_buffer_size) );
 
 
 		// set parent
@@ -53,6 +109,7 @@ namespace csX75
 		//initial parameters are set to 0;
 
 		tx=ty=tz=rx=ry=rz=0;
+		texture_on = true;
 
 		update_matrices();
 	}
@@ -101,8 +158,9 @@ namespace csX75
 		//matrixStack multiply
 		glm::mat4* ms_mult = multiply_stack(matrixStack);
 
-		glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(*ms_mult));
-		glBindVertexArray (vao);
+		if(texture_on) glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(*ms_mult));
+		else glUniformMatrix4fv(uModelViewMatrix1, 1, GL_FALSE, glm::value_ptr(*ms_mult));
+		glBindVertexArray (vao[0]);
 		glDrawArrays(GL_TRIANGLES, 0, num_vertices);
 
 		// for memory 

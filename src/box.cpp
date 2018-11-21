@@ -6,7 +6,7 @@ csX75::HNode* get_box(float size,glm::vec4 offset)
     
     //base of box (root of box)
 	box_base = lid(3,2,glm::vec4(0,-1,0,1),NULL,skincolor,skincolor);
-    box_base->set_constraints(1,0,1,0,1,0);
+    box_base->set_constraints(0,0,0,0,0,0);
     box_base->change_parameters(offset.x,offset.y,offset.z,0,0,0,size);
 
     //Interior hexagon of box
@@ -21,7 +21,7 @@ csX75::HNode* get_box(float size,glm::vec4 offset)
     
     //lid of box
     box_lid = lid(3,1,glm::vec4(0,-1,-sqrt(3.0)*3/2,1),box_base,browncolor2,browncolor2);
-    box_lid->set_constraints(0,180,0,0,0,0);
+    box_lid->set_constraints(60,180,0,0,0,0);
     box_lid->change_parameters(0,1,-sqrt(3.0)*3/2,180,0,0,size);
 
     //interior lid

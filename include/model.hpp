@@ -33,6 +33,10 @@
 #include "table.hpp"
 #include "chair.hpp"
 #include "stool.hpp"
+#include "room.hpp"
+#include "almarah.hpp"
+#include "bezier.hpp"
+#include <time.h>
 
 /*
 // Translation Parameters
@@ -41,18 +45,31 @@ GLfloat xpos=0.0,ypos=0.0,zpos=0.0;
 GLfloat xrot=0.0,yrot=0.0,zrot=0.0;
 */
 // Camera position and rotation Parameters
-GLfloat c_xpos = 0.0, c_ypos = 0.0, c_zpos = 2.0;
+glm::vec4 start_posn = glm::vec4(0.0,2.0,8.0,1.0);
+
+GLfloat c_xpos = start_posn.x, c_ypos = start_posn.y, c_zpos = start_posn.z;
 GLfloat c_up_x = 0.0, c_up_y = 1.0, c_up_z = 0.0;
 GLfloat c_xrot=0.0,c_yrot=0.0,c_zrot=0.0;
+
+glm::vec4 c_lookAt, music_box_pos;
+
+bool recordMode = false; //set to true
+bool useTexture = false;
+
+bool start_camera = false;
+clock_t timer;
+
+float obj_y = 22;
 
 //Running variable to toggle culling on/off
 bool enable_culling=true;
 //Running variable to toggle wireframe/solid modelling
 bool solid=true;
 //Enable/Disable perspective view
-bool enable_perspective=false;
+bool enable_perspective=true;
 //Shader program attribs
-GLuint vPosition,vColor;
+GLuint vPosition,vColor,vNormal,texCoord;
+GLuint vPosition1,vColor1;
 
 //global matrix stack for hierarchical modelling
 std::vector<glm::mat4> matrixStack;
@@ -60,12 +77,13 @@ std::vector<glm::mat4> matrixStack;
 //relative size of the character
 float size = 1;
 
-csX75::HNode* fox,*human,*box, *table, *chair1, *stool1;
+csX75::HNode* fox,*human,*box, *table, *chair1, *stool1, *almarah;
 csX75::HNode* curr_node;
 
 csX75::HNode* table_base;
 csX75::HNode* chair1_base;
 csX75::HNode* stool1_base;
+csX75::HNode* almarah_base;
 
 //------- HUMAN ---------
 csX75::HNode* torso2;
@@ -106,6 +124,13 @@ csX75::HNode* an_left_hll;
 csX75::HNode* an_right_hla;
 csX75::HNode* an_right_hll;
 csX75::HNode* an_tail;
+
+//-----------ROOM---------------
+
+csX75::HNode* room;
+
+csX75::HNode* room_door;
+csX75::HNode* room_window;
 
 #endif
 
