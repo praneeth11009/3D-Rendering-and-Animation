@@ -185,8 +185,8 @@ void initBuffersGL(void)
   size = 0.5;
   lamp = get_lamp(size,glm::vec4(-4,1.7,-2,1));
 
-  int aa = system("rm keyframes.txt");
-  aa = system("touch keyframes.txt");
+//  int aa = system("rm keyframes.txt");
+//  aa = system("touch keyframes.txt");
 }
 
 void renderGL(void)
